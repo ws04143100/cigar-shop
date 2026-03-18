@@ -298,9 +298,9 @@ export default function ProductDetailPage() {
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
                   <img 
-                    src="/douyin-logo.jpg" 
+                    src="https://play-lh.googleusercontent.com/xey8dXOB53LtCR97JhDH7T-6np_sUBBE9iF7WP4Sp6T55oO28e6hic1LFTklCELw9Iw" 
                     alt="抖音" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-white"
                   />
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-pink-500">
@@ -320,9 +320,9 @@ export default function ProductDetailPage() {
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
                   <img 
-                    src="/xiaohongshu-logo.jpg" 
+                    src="https://upload.wikimedia.org/wikipedia/commons/c/c1/XiaohongshuLOGO.png" 
                     alt="小紅書" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-500">
