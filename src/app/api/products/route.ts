@@ -3,20 +3,35 @@ import * as XLSX from 'xlsx';
 import * as path from 'path';
 import { isProductDisabled, getDisabledProducts } from '@/lib/productStore';
 
-// 产品数据接口
+// 产�??�据?�口
 export interface Product {
   id: string;
   name: string;
-  category: string;  // 品牌
+  category: string;  // ?��?
   wholesalePrice: number;
   retailPrice: number;
   salePrice: number;
   tag: string;
   description: string;
-  stock: number;  // 库存
+  stock: number;  // 库�?
 }
 
-// 从本地Excel文件读取数据
+// 生成稳定的产�? ID
+function generateProductId(name: string, category: string): string {
+  const key = `${name}-${category}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (key.length > 20) {
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      const char = key.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return `product-${Math.abs(hash).toString(36)}`;
+  }
+  return `product-${key}`;
+}
+
+// 从本?�Excel?�件读�??�据
 function readExcelData(): { products: Product[], brandStats: Record<string, number> } {
   try {
     const fs = require('fs');
@@ -32,20 +47,20 @@ function readExcelData(): { products: Product[], brandStats: Record<string, numb
     const products: Product[] = [];
     const brandStats: Record<string, number> = {};
     
-    // 跳过表头
+    // 跳�?表头
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       if (!row || row.length < 14) continue;
       
       const [
         name,
-        category,  // 品牌
-        ,  // 条码 - 已移除
+        category,  // ?��?
+        ,  // ?��? - 已移??
         wholesalePrice,
-        , , , , , ,  // S, D, C, B, H, 倉
-        salePrice,   // K列 - 销售价
-        ,  // L列
-        stock,  // M列 - 库存
+        , , , , , ,  // S, D, C, B, H, ??
+        salePrice,   // K??- ?�?�价
+        ,  // L??
+        stock,  // M??- 库�?
         tag
       ] = row;
       
@@ -56,19 +71,20 @@ function readExcelData(): { products: Product[], brandStats: Record<string, numb
       const categoryStr = String(category || '');
       const stockNum = parseInt(String(stock || '0')) || 0;
       
-      // 过滤条件：名字带有"散支"或"PCC"的不显示
+      // 过滤?�件：�?字带????��"??PCC"?��??�示
       if (nameStr.includes('散支') || nameStr.includes('PCC')) continue;
       
-      // 只显示雪茄分类
+      // ?�显示雪?��?�?
       if (tagStr !== '雪茄') continue;
       
-      // 只显示库存 > 1 的产品
+      // ?�显示�?�?> 1 ?�产??
       if (stockNum <= 1) continue;
       
-      // 统计品牌
+      // 统计?��?
       brandStats[categoryStr] = (brandStats[categoryStr] || 0) + 1;
       
-      const productId = `product-${products.length + 1}`;
+      // 使用稳定的 ID 生成方式
+      const productId = generateProductId(nameStr, categoryStr);
       
       products.push({
         id: productId,
@@ -85,7 +101,7 @@ function readExcelData(): { products: Product[], brandStats: Record<string, numb
     
     return { products, brandStats };
   } catch (error) {
-    console.error('读取Excel文件失败:', error);
+    console.error('读�?Excel?�件失败:', error);
     return { products: [], brandStats: {} };
   }
 }
@@ -94,18 +110,18 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const brand = searchParams.get('brand');
-    const admin = searchParams.get('admin');  // 管理员模式
+    const admin = searchParams.get('admin');  // 管�??�模�?
     
     const { products, brandStats } = readExcelData();
     
-    // 筛选产品
+    // 筛选产??
     let filteredProducts = products;
     
     if (brand) {
       filteredProducts = filteredProducts.filter(p => p.category === brand);
     }
     
-    // 非管理员模式下，过滤掉下架的产品
+    // ?�管?��?模�?下�?过滤?��??��?产�?
     if (admin !== 'true') {
       filteredProducts = filteredProducts.filter(p => !isProductDisabled(p.id));
     }
@@ -118,9 +134,9 @@ export async function GET(request: NextRequest) {
       disabledProducts: admin === 'true' ? getDisabledProducts() : undefined
     });
   } catch (error) {
-    console.error('获取产品数据失败:', error);
+    console.error('?��?产�??�据失败:', error);
     return NextResponse.json(
-      { success: false, error: '获取产品数据失败' },
+      { success: false, error: '?��?产�??�据失败' },
       { status: 500 }
     );
   }

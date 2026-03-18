@@ -15,6 +15,21 @@ interface Product {
   stock: number;
 }
 
+// 生成稳定的产�? ID
+function generateProductId(name: string, category: string): string {
+  const key = `${name}-${category}`.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (key.length > 20) {
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      const char = key.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return `product-${Math.abs(hash).toString(36)}`;
+  }
+  return `product-${key}`;
+}
+
 function readExcelData(): Product[] {
   try {
     const fs = require('fs');
@@ -36,7 +51,7 @@ function readExcelData(): Product[] {
       const [
         name,
         category,
-        ,  // 条码 - 已移除
+        ,  // 條碼 - 已移除
         wholesalePrice,
         , , , , , ,  // S, D, C, B, H, 倉
         salePrice,   // K列 - 销售价
@@ -53,8 +68,11 @@ function readExcelData(): Product[] {
       if (nameStr.includes('散支') || nameStr.includes('PCC')) continue;
       if (tagStr !== '雪茄') continue;
       
+      // 使用稳定的 ID 生成方式
+      const productId = generateProductId(nameStr, String(category || ''));
+      
       products.push({
-        id: `product-${products.length + 1}`,
+        id: productId,
         name: nameStr,
         category: String(category || ''),
         wholesalePrice: parseFloat(wholesalePrice) || 0,
