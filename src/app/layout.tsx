@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import WeChatDetector from '@/components/WeChatDetector';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -40,7 +39,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
       <body className={`antialiased`}>
-        <WeChatDetector />
         {children}
       </body>
     </html>
