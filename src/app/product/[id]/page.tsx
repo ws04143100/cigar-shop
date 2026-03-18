@@ -296,13 +296,12 @@ export default function ProductDetailPage() {
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
               >
-                <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center">
-                  <svg className="w-9 h-9 text-white" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M24.004 4C13.232 4 4 13.232 4 24c0 10.768 9.232 20 20.004 20 10.764 0 20-9.232 20-20C44.004 13.232 34.772 4 24.004 4z" fill="white"/>
-                    <path d="M32.668 26.588c-.692-.404-1.636-.232-2.1.388-.464.62-.256 1.48.468 1.92.072.044.752.432 1.292-.12.54-.552.688-1.22.688-1.22s-.532-.392-.348-1.968z" fill="black"/>
-                    <path d="M22.516 22.26c-.752-.112-1.436.28-1.688.88-.252.6-.036 1.22.596 1.52.632.3 1.38.104 1.94-.296.56-.4.688-1.104.688-1.104s-.26-.78-1.536-2z" fill="black"/>
-                    <path d="M28.94 31.66c1.28-.14 2.22-.74 2.22-.74s-.38-.68-1.3-1.12c-.92-.44-1.82-.28-2.42.2-.6.48-.84 1.12-.84 1.12s.08-.48.88-.84c.8-.36 1.44-.26 1.44-.26s-.36.36-.94.72c-.58.36-1.36.68-2.48.56 1.42.72 3.42.44 3.42.44s-.5.26-1.44.6z" fill="black"/>
-                  </svg>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="/douyin-logo.jpg" 
+                    alt="抖音" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-pink-500">
                   抖音搜尋
@@ -319,14 +318,12 @@ export default function ProductDetailPage() {
                 rel="noopener noreferrer"
                 className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
               >
-                <div className="w-14 h-14 bg-red-500 rounded-2xl flex items-center justify-center">
-                  <svg className="w-9 h-9 text-white" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="48" height="48" rx="8" fill="#FF2442"/>
-                    <path d="M14 36V12h4v24h-4z" fill="white"/>
-                    <path d="M22 36V20h4v16h-4z" fill="white"/>
-                    <path d="M30 36V16h4v20h-4z" fill="white"/>
-                    <path d="M38 36V14h-4l-4 12h4z" fill="white"/>
-                  </svg>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="/xiaohongshu-logo.jpg" 
+                    alt="小紅書" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-500">
                   小紅書搜尋
