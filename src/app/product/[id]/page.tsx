@@ -282,19 +282,57 @@ export default function ProductDetailPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {/* Product Placeholder */}
-          <div className="aspect-square rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-            <div className="text-center p-8">
-              <div className="w-24 h-24 mx-auto mb-4 bg-amber-600/20 rounded-full flex items-center justify-center">
-                <Package className="w-12 h-12 text-amber-600 dark:text-amber-400" />
-              </div>
-              <p className="text-lg font-semibold text-amber-700 dark:text-amber-300 mb-2">
-                {product.name.length > 20 ? product.name.substring(0, 20) + '...' : product.name}
-              </p>
-              <p className="text-sm text-amber-600/70 dark:text-amber-400/70">
-                {product.category}
-              </p>
+          {/* 社交平台推薦區 */}
+          <div className="aspect-square rounded-xl bg-gradient-to-br from-pink-50 to-red-50 dark:from-pink-900/20 dark:to-red-900/20 flex flex-col items-center justify-center p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 text-center">
+              在社交平台查看同款產品
+            </h2>
+            
+            <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+              {/* 抖音 */}
+              <a
+                href={`https://www.douyin.com/search/${encodeURIComponent(product?.name || '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
+              >
+                <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 4.2-2.09 6.16-1.69.13.03 1.59.08 1.78.08.06-.01 2.91-.86 2.79-2.87-.02-.72-.32-1.39-.78-1.89-.67-.72-1.73-1.13-2.84-1.22-.02-.16-.03-.32-.03-.48.01-.73.37-1.41.84-1.92.61-.66 1.54-.97 2.46-.89.11.01.22.02.33.03z"/>
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-pink-500">
+                  抖音搜尋
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  查看同款產品
+                </span>
+              </a>
+              
+              {/* 小紅書 */}
+              <a
+                href={`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(product?.name || '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
+              >
+                <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.02 2.91c3.22 0 5.84 2.62 5.84 5.84 0 3.23-2.62 5.85-5.84 5.85-3.22 0-5.84-2.62-5.84-5.85 0-3.22 2.62-5.84 5.84-5.84zm0 9.47c2.01 0 3.63-1.62 3.63-3.63 0-2.01-1.62-3.63-3.63-3.63-2.01 0-3.63 1.62-3.63 3.63 0 2.01 1.62 3.63 3.63 3.63zM17.77 19.8c-.47 0-.91-.12-1.3-.35-.39-.23-.68-.55-.87-.96l-1.03-2.21c-.32-.68-.64-1.36-.96-2.04-.32-.68-.65-1.36-.97-2.04l-.96-2.08c-.31-.67-.62-1.35-.93-2.04l-.93-2.1c-.3-.68-.6-1.36-.9-2.04l-.85-2c-.28-.64-.56-1.28-.83-1.92l-.72-1.78c-.24-.58-.48-1.16-.71-1.74-.23-.58-.46-1.16-.68-1.74l-.6-1.6c-.2-.53-.4-1.06-.59-1.59-.19-.53-.38-1.06-.56-1.59l-.48-1.4c-.16-.47-.32-.94-.47-1.41l-.36-1.14c-.12-.38-.24-.76-.35-1.14-.11-.38-.22-.76-.32-1.14l-.24-.94c-.08-.3-.16-.6-.23-.9l-.12-.52c-.07-.26-.13-.52-.19-.78l-.06-.26V2.3l.06.26c.06.26.12.52.19.78l.12.52c.08.3.16.6.24.9l.24.94c.1.38.21.76.32 1.14.11.38.23.76.35 1.14l.36 1.14c.15.47.31.94.47 1.41l.48 1.4c.18.53.37 1.06.56 1.59.19.53.39 1.06.59 1.59l.6 1.6c.22.58.45 1.16.68 1.74.23.58.47 1.16.71 1.74l.72 1.78c.27.64.55 1.28.83 1.92l.85 2c.3.68.6 1.36.9 2.04l.93 2.1c.31.67.62 1.35.93 2.04l.96 2.08c.32.68.64 1.36.97 2.04.32.68.64 1.36.96 2.04l1.03 2.21c.19.41.48.73.87.96.39.23.83.35 1.3.35.47 0 .91-.12 1.3-.35.39-.23.68-.55.87-.96l1.03-2.21c.32-.68.64-1.36.96-2.04.32-.68.65-1.36.97-2.04l.96-2.08c.31-.67.62-1.35.93-2.04l.93-2.1c.3-.68.6-1.36.9-2.04l.85-2c.28-.64.56-1.28.83-1.92l.72-1.78c.24-.58.48-1.16.71-1.74.23-.58.46-1.16.68-1.74l.6-1.6c.2-.53.4-1.06.59-1.59.19-.53.38-1.06.56-1.59l.48-1.4c.16-.47.32-.94.47-1.41l.36-1.14c.12-.38.24-.76.35-1.14.11-.38.22-.76.32-1.14l.24-.94c.08-.3.16-.6.23-.9l.12-.52c.07-.26.13-.52.19-.78l.06-.26V2.3l-.06.26c-.06.26-.12.52-.19.78l-.12.52c-.08.3-.16.6-.24.9l-.24.94c-.1.38-.21.76-.32 1.14-.11.38-.23.76-.35 1.14l-.36 1.14c-.15.47-.31.94-.47 1.41l-.48 1.4c-.18.53-.37 1.06-.56 1.59-.19.53-.39 1.06-.59 1.59l-.6 1.6c-.22.58-.45 1.16-.68 1.74-.23.58-.47 1.16-.71 1.74l-.72 1.78c-.27.64-.55 1.28-.83 1.92l-.85 2c-.3.68-.6 1.36-.9 2.04l-.93 2.1c-.31.67-.62 1.35-.93 2.04l-.96 2.08c-.32.68-.64 1.36-.97 2.04-.32.68-.64 1.36-.96 2.04l-1.03 2.21c-.19.41-.48.73-.87.96-.39.23-.83.35-1.3.35z"/>
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-500">
+                  小紅書搜尋
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  發現更多同款
+                </span>
+              </a>
             </div>
+            
+            <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
+              點擊上方按鈕，進入 {product?.name} 的搜尋結果頁面
+            </p>
           </div>
 
           {/* Product Info */}
