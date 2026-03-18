@@ -119,8 +119,13 @@ export default function ProductDetailPage() {
     if (!product) return;
     
     try {
-      const response = await fetch(`/api/comments?productId=${product.id}&index=${index}`, {
-        method: 'DELETE'
+      const response = await fetch('/api/comments', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          index: index
+        })
       });
       
       const data = await response.json();

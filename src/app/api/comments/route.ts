@@ -78,20 +78,17 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const productId = searchParams.get('productId');
-    const index = searchParams.get('index');
+    const body = await request.json();
+    const { productId, index } = body;
     
-    if (!productId || index === null) {
+    if (!productId || index === undefined) {
       return NextResponse.json(
         { success: false, error: '缺少必要參數' },
         { status: 400 }
       );
     }
     
-    const commentIndex = parseInt(index);
-    
-    if (!commentsStore[productId] || !commentsStore[productId][commentIndex]) {
+    if (!commentsStore[productId] || !commentsStore[productId][index]) {
       return NextResponse.json(
         { success: false, error: '留言不存在' },
         { status: 404 }
@@ -99,7 +96,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     // 刪除留言
-    commentsStore[productId].splice(commentIndex, 1);
+    commentsStore[productId].splice(index, 1);
     
     return NextResponse.json({
       success: true
