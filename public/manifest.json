@@ -1,0 +1,22 @@
+{
+  "name": "雪茄精品館",
+  "short_name": "雪茄館",
+  "description": "專業雪茄零售批發",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#fffbeb",
+  "theme_color": "#d97706",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
