@@ -53,6 +53,38 @@ export default function ProductDetailPage() {
     }
   }, [product]);
 
+  // 加載 CommentBox
+  useEffect(() => {
+    if (!params.id) return;
+    
+    // 動態加載 CommentBox 腳本
+    const loadCommentBox = () => {
+      if ((window as any).commentBox) {
+        (window as any).commentBox('5734838766141440-proj', {
+          uniqueID: params.id as string
+        });
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/commentbox.io/dist/commentBox.js';
+      script.async = true;
+      script.onload = () => {
+        if ((window as any).commentBox) {
+          (window as any).commentBox('5734838766141440-proj', {
+            uniqueID: params.id as string
+          });
+        }
+      };
+      document.body.appendChild(script);
+    };
+    
+    // 延遲加載確保 DOM 準備好
+    const timer = setTimeout(loadCommentBox, 500);
+    
+    return () => clearTimeout(timer);
+  }, [params.id]);
+
   const fetchProduct = async (id: string) => {
     try {
       const response = await fetch(`/api/products/${id}?admin=true`);
@@ -390,30 +422,11 @@ export default function ProductDetailPage() {
             {/* CommentBox 留言系統 */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-amber-200 dark:border-gray-700 mt-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">討論區</h2>
-              <div className="commentbox" id={`commentbox-${product?.id || params.id}`}></div>
+              <div className="commentbox" id={`commentbox-${params.id}`}></div>
             </div>
           </div>
         </div>
       </main>
-
-      {/* CommentBox Script */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              var script = document.createElement('script');
-              script.src = 'https://unpkg.com/commentbox.io/dist/commentBox.js';
-              script.onload = function() {
-                var productId = '${params.id}';
-                commentBox('5734838766141440-proj', {
-                  uniqueID: productId
-                });
-              };
-              document.head.appendChild(script);
-            })();
-          `
-        }}
-      />
 
       {/* 下架密码对话框 */}
       {showDisableDialog && (
