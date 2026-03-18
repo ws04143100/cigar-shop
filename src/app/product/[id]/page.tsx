@@ -310,32 +310,10 @@ export default function ProductDetailPage() {
                   查看同款產品
                 </span>
               </a>
-              
-              {/* 小紅書 */}
-              <a
-                href={`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(product?.name || '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
-              >
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
-                  <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/c/c1/XiaohongshuLOGO.png" 
-                    alt="小紅書" 
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-500">
-                  小紅書搜尋
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                  發現更多同款
-                </span>
-              </a>
             </div>
             
             <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
-              點擊上方按鈕，進入 {product?.name} 的搜尋結果頁面
+              點擊上方按鈕，進入 {product?.name} 的抖音搜尋頁面
             </p>
           </div>
 
