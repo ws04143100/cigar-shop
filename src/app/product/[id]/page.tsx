@@ -24,6 +24,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [descriptionLoading, setDescriptionLoading] = useState(false);
   const [descriptionGenerated, setDescriptionGenerated] = useState(false);
+  const [canRegenerate, setCanRegenerate] = useState(false);
   
   // 下架相关状态
   const [showDisableDialog, setShowDisableDialog] = useState(false);
@@ -75,6 +76,7 @@ export default function ProductDetailPage() {
       if (data.success) {
         setProduct({ ...product, description: data.description });
         setDescriptionGenerated(true);
+        setCanRegenerate(true);  // 啟用重新生成
       } else {
         console.error('生成失败:', data.error);
       }
@@ -246,16 +248,28 @@ export default function ProductDetailPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-amber-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">產品介紹</h2>
-                {!descriptionGenerated && (
-                  <button
-                    onClick={generateDescription}
-                    disabled={descriptionLoading}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white text-sm rounded-lg transition-colors"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    {descriptionLoading ? '生成中...' : '點擊生成'}
-                  </button>
-                )}
+                <div className="flex gap-2">
+                  {canRegenerate && (
+                    <button
+                      onClick={generateDescription}
+                      disabled={descriptionLoading}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm rounded-lg transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      {descriptionLoading ? '生成中...' : '重新生成'}
+                    </button>
+                  )}
+                  {!descriptionGenerated && (
+                    <button
+                      onClick={generateDescription}
+                      disabled={descriptionLoading}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white text-sm rounded-lg transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      {descriptionLoading ? '生成中...' : '點擊生成'}
+                    </button>
+                  )}
+                </div>
               </div>
               
               {descriptionLoading ? (
