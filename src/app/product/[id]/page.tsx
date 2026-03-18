@@ -33,11 +33,25 @@ export default function ProductDetailPage() {
   const [disableLoading, setDisableLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
 
+  // 留言相關狀態
+  const [comments, setComments] = useState<{name: string; content: string; createdAt: string}[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [newCommentName, setNewCommentName] = useState('');
+  const [newCommentContent, setNewCommentContent] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
+
   useEffect(() => {
     if (params.id) {
       fetchProduct(params.id as string);
     }
   }, [params.id]);
+
+  // 當產品加載完成後，獲取留言
+  useEffect(() => {
+    if (product && product.id) {
+      fetchComments();
+    }
+  }, [product]);
 
   const fetchProduct = async (id: string) => {
     try {
@@ -51,6 +65,52 @@ export default function ProductDetailPage() {
       console.error('获取产品详情失败:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 獲取留言
+  const fetchComments = async () => {
+    if (!product) return;
+    try {
+      setCommentsLoading(true);
+      const response = await fetch(`/api/comments?productId=${product.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setComments(data.data || []);
+      }
+    } catch (error) {
+      console.error('獲取留言失敗:', error);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  // 發布留言
+  const submitComment = async () => {
+    if (!product || !newCommentName.trim() || !newCommentContent.trim()) return;
+    
+    try {
+      setSubmittingComment(true);
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          name: newCommentName.trim(),
+          content: newCommentContent.trim()
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setComments([data.data, ...comments]);
+        setNewCommentName('');
+        setNewCommentContent('');
+      }
+    } catch (error) {
+      console.error('發布留言失敗:', error);
+    } finally {
+      setSubmittingComment(false);
     }
   };
 
@@ -298,6 +358,74 @@ export default function ProductDetailPage() {
                 <p className="text-gray-400 dark:text-gray-500 text-center py-4">
                   點擊上方按鈕，AI 將為您生成產品介紹
                 </p>
+              )}
+            </div>
+
+            {/* 留言區域 */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-amber-200 dark:border-gray-700 mt-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">討論區</h2>
+              
+              {/* 發布留言表單 */}
+              <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    placeholder="您的暱稱"
+                    value={newCommentName}
+                    onChange={(e) => setNewCommentName(e.target.value)}
+                    className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+                <div className="mb-3">
+                  <textarea
+                    placeholder="分享您的想法..."
+                    value={newCommentContent}
+                    onChange={(e) => setNewCommentContent(e.target.value)}
+                    rows={3}
+                    className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+                  />
+                </div>
+                <button
+                  onClick={submitComment}
+                  disabled={submittingComment || !newCommentName.trim() || !newCommentContent.trim()}
+                  className="w-full px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {submittingComment ? '發布中...' : '發布留言'}
+                </button>
+              </div>
+              
+              {/* 留言列表 */}
+              {commentsLoading ? (
+                <div className="space-y-4">
+                  <div className="animate-pulse flex gap-3">
+                    <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                </div>
+              ) : comments.length > 0 ? (
+                <div className="space-y-4">
+                  {comments.map((comment, index) => (
+                    <div key={index} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 bg-amber-600/20 rounded-full flex items-center justify-center">
+                          <span className="text-amber-600 dark:text-amber-400 text-sm font-medium">
+                            {comment.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white">{comment.name}</span>
+                        <span className="text-xs text-gray-400">
+                          {new Date(comment.createdAt).toLocaleString('zh-TW')}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 dark:text-gray-300 text-sm pl-10">{comment.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-400 dark:text-gray-500 text-center py-4">尚無留言，歡迎發表第一條留言！</p>
               )}
             </div>
           </div>
