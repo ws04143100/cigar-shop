@@ -237,6 +237,10 @@ export default function Home() {
               <div className="w-10 h-10 bg-gradient-to-br from-amber-600 to-orange-700 rounded-full flex items-center justify-center">
                 <Package className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">雪茄精品館</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">下單助手。點擊產品可以進入詳細介紹。</p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {/* 上传按钮 */}
