@@ -15,19 +15,18 @@ interface Product {
   stock: number;
 }
 
-// 生成稳定的产�? ID
-function generateProductId(name: string, category: string): string {
-  const key = `${name}-${category}`.toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (key.length > 20) {
-    let hash = 0;
-    for (let i = 0; i < key.length; i++) {
-      const char = key.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return `product-${Math.abs(hash).toString(36)}`;
+// 生成稳定的产�? ID，使用 rowIndex 确保唯一性
+function generateProductId(name: string, category: string, rowIndex: number): string {
+  // 使用 product- 前缀 + rowIndex + 名字和分类的 hash
+  const key = `${name}-${category}`;
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    const char = key.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
   }
-  return `product-${key}`;
+  // 使用 rowIndex 确保唯一性
+  return `product-${rowIndex}-${Math.abs(hash).toString(36)}`;
 }
 
 function readExcelData(): Product[] {
@@ -69,7 +68,7 @@ function readExcelData(): Product[] {
       if (tagStr !== '雪茄') continue;
       
       // 使用稳定的 ID 生成方式
-      const productId = generateProductId(nameStr, String(category || ''));
+      const productId = generateProductId(nameStr, String(category || ''), i);
       
       products.push({
         id: productId,
