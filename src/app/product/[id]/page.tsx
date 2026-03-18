@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, Sparkles, Ban, X, Eye, EyeOff } from 'lucide-react';
+import { Package, Sparkles, Ban, X, Eye, EyeOff, Trash2 } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -111,6 +111,27 @@ export default function ProductDetailPage() {
       console.error('發布留言失敗:', error);
     } finally {
       setSubmittingComment(false);
+    }
+  };
+
+  // 刪除留言
+  const deleteComment = async (index: number) => {
+    if (!product) return;
+    
+    try {
+      const response = await fetch(`/api/comments?productId=${product.id}&index=${index}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // 從本地狀態中移除該留言
+        const newComments = [...comments];
+        newComments.splice(index, 1);
+        setComments(newComments);
+      }
+    } catch (error) {
+      console.error('刪除留言失敗:', error);
     }
   };
 
@@ -419,6 +440,17 @@ export default function ProductDetailPage() {
                         <span className="text-xs text-gray-400">
                           {new Date(comment.createdAt).toLocaleString('zh-TW')}
                         </span>
+                        <button
+                          onClick={() => {
+                            if (confirm('確定要刪除這條留言嗎？')) {
+                              deleteComment(index);
+                            }
+                          }}
+                          className="ml-auto p-1 text-red-500 hover:text-red-700"
+                          title="刪除留言"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                       <p className="text-gray-700 dark:text-gray-300 text-sm pl-10">{comment.content}</p>
                     </div>

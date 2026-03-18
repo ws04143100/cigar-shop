@@ -75,3 +75,40 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const productId = searchParams.get('productId');
+    const index = searchParams.get('index');
+    
+    if (!productId || index === null) {
+      return NextResponse.json(
+        { success: false, error: '缺少必要參數' },
+        { status: 400 }
+      );
+    }
+    
+    const commentIndex = parseInt(index);
+    
+    if (!commentsStore[productId] || !commentsStore[productId][commentIndex]) {
+      return NextResponse.json(
+        { success: false, error: '留言不存在' },
+        { status: 404 }
+      );
+    }
+    
+    // 刪除留言
+    commentsStore[productId].splice(commentIndex, 1);
+    
+    return NextResponse.json({
+      success: true
+    });
+  } catch (error) {
+    console.error('刪除留言失敗:', error);
+    return NextResponse.json(
+      { success: false, error: '刪除留言失敗' },
+      { status: 500 }
+    );
+  }
+}
