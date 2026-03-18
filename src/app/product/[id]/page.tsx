@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
     // 動態加載 CommentBox 腳本
     const loadCommentBox = () => {
       if ((window as any).commentBox) {
-        (window as any).commentBox('5734838766141440-proj', {
+        (window as any).commentBox('5734838766141440', {
           uniqueID: params.id as string
         });
         return;
@@ -71,7 +71,7 @@ export default function ProductDetailPage() {
       script.async = true;
       script.onload = () => {
         if ((window as any).commentBox) {
-          (window as any).commentBox('5734838766141440-proj', {
+          (window as any).commentBox('5734838766141440', {
             uniqueID: params.id as string
           });
         }
