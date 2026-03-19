@@ -1,62 +1,38 @@
-import * as fs from 'fs';
-import * as path from 'path';
+// 產品下架管理 - 使用環境變量
 
-const DISABLED_FILE = path.join(process.cwd(), 'data', 'disabled-products.json');
+// 從環境變量讀取下架產品列表
+// 格式：DISABLED_PRODUCTS=product-id-1,product-id-2,product-id-3
+// 在 Vercel Dashboard > Settings > Environment Variables 中設置
 
-// 确保数据目录存在
-function ensureDataDir() {
-  const dataDir = path.dirname(DISABLED_FILE);
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
+function getDisabledProductsFromEnv(): Set<string> {
+  const envValue = process.env.DISABLED_PRODUCTS || '';
+  if (!envValue) return new Set();
+  
+  return new Set(
+    envValue.split(',').map(id => id.trim()).filter(id => id.length > 0)
+  );
 }
 
-// 读取下架列表
-function readDisabledProducts(): Set<string> {
-  try {
-    ensureDataDir();
-    if (fs.existsSync(DISABLED_FILE)) {
-      const data = fs.readFileSync(DISABLED_FILE, 'utf-8');
-      return new Set(JSON.parse(data));
-    }
-  } catch (error) {
-    console.error('读取下架列表失败:', error);
-  }
-  return new Set();
-}
-
-// 写入下架列表
-function writeDisabledProducts(disabledSet: Set<string>) {
-  try {
-    ensureDataDir();
-    fs.writeFileSync(DISABLED_FILE, JSON.stringify(Array.from(disabledSet), null, 2));
-  } catch (error) {
-    console.error('写入下架列表失败:', error);
-  }
-}
-
-// 获取下架列表
-export function getDisabledProducts(): string[] {
-  return Array.from(readDisabledProducts());
-}
-
-// 设置下架状态
-export function setProductDisabled(productId: string, disabled: boolean) {
-  const disabledSet = readDisabledProducts();
-  if (disabled) {
-    disabledSet.add(productId);
-  } else {
-    disabledSet.delete(productId);
-  }
-  writeDisabledProducts(disabledSet);
-}
-
-// 检查产品是否下架
+// 檢查產品是否下架
 export function isProductDisabled(productId: string): boolean {
-  return readDisabledProducts().has(productId);
+  return getDisabledProductsFromEnv().has(productId);
 }
 
-// 清空下架列表（刷新时调用）
+// 獲取所有下架產品 ID 列表
+export function getDisabledProducts(): string[] {
+  return Array.from(getDisabledProductsFromEnv());
+}
+
+// 這個函數僅用於本地開發時模擬下架狀態
+// 生產環境需要通過 Vercel Dashboard 設置環境變量
+export function setProductDisabled(productId: string, disabled: boolean) {
+  // 注意：運行時無法修改環境變量
+  // 需要在 Vercel Dashboard > Settings > Environment Variables 中手動更新
+  // 格式：DISABLED_PRODUCTS=id1,id2,id3
+  console.log(`[本地開發] 產品 ${productId} 下架狀態: ${disabled}`);
+  console.log('[提示] 請在 Vercel Dashboard 環境變量中更新 DISABLED_PRODUCTS');
+}
+
 export function clearDisabledProducts() {
-  writeDisabledProducts(new Set());
+  console.log('[提示] 請在 Vercel Dashboard 環境變量中清除 DISABLED_PRODUCTS');
 }
