@@ -281,44 +281,8 @@ export default function ProductDetailPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {/* 社交平台推薦區 */}
-          <div className="aspect-square rounded-xl bg-gradient-to-br from-pink-50 to-red-50 dark:from-pink-900/20 dark:to-red-900/20 flex flex-col items-center justify-center p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 text-center">
-              在社交平台查看同款產品
-            </h2>
-            
-            <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-              {/* 抖音 */}
-              <a
-                href={`https://www.douyin.com/search/${encodeURIComponent(product?.name || '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow group"
-              >
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
-                  <img 
-                    src="https://play-lh.googleusercontent.com/xey8dXOB53LtCR97JhDH7T-6np_sUBBE9iF7WP4Sp6T55oO28e6hic1LFTklCELw9Iw" 
-                    alt="抖音" 
-                    className="w-full h-full object-contain bg-white"
-                  />
-                </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-pink-500">
-                  抖音搜尋
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                  查看同款產品
-                </span>
-              </a>
-            </div>
-            
-            <p className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
-              點擊上方按鈕，進入 {product?.name} 的抖音搜尋頁面
-            </p>
-          </div>
-
-          {/* Product Info */}
-          <div className="space-y-6">
+        {/* Product Info */}
+        <div className="space-y-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 {product.name}
