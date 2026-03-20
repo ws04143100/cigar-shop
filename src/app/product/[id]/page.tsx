@@ -283,7 +283,7 @@ export default function ProductDetailPage() {
       <main className="container mx-auto px-4 py-6">
         {/* Product Info */}
         <div className="space-y-6">
-            <div>
+          <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 {product.name}
               </h1>
