@@ -439,8 +439,8 @@ export default function ProductDetailPage() {
               )}
             </div>
           </div>
-        </div>
-      </main>
+
+        </main>
 
       {/* 下架密码对话框 */}
       {showDisableDialog && (
