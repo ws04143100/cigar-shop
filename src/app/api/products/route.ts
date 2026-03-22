@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import * as path from 'path';
-import { isProductDisabledAsync, getDisabledProductsAsync } from '@/lib/productStore';
+import { isProductDisabled, getDisabledProducts } from '@/lib/productStore';
 import { EXCEL_FILE_NAME } from '@/lib/excelConfig';
 
 // 产�??�据?�口
@@ -123,11 +123,11 @@ export async function GET(request: NextRequest) {
     
     // 非管理員模式下過濾下架產品
     if (admin !== 'true') {
-      const disabledProducts = await getDisabledProductsAsync();
+      const disabledProducts = getDisabledProducts();
       filteredProducts = filteredProducts.filter(p => !disabledProducts.includes(p.id));
     }
     
-    const disabledProducts = await getDisabledProductsAsync();
+    const disabledProducts = getDisabledProducts();
     
     return NextResponse.json({
       success: true,

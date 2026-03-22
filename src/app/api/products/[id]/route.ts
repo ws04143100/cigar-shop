@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import * as path from 'path';
-import { isProductDisabledAsync } from '@/lib/productStore';
+import { isProductDisabled } from '@/lib/productStore';
 import { EXCEL_FILE_NAME } from '@/lib/excelConfig';
 
 interface Product {
@@ -115,7 +115,7 @@ export async function GET(
     }
     
     // 检查是否下架
-    const disabled = await isProductDisabledAsync(id);
+    const disabled = isProductDisabled(id);
     
     return NextResponse.json({
       success: true,

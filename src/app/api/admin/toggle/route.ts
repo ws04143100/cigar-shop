@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { setProductDisabled, getDisabledProductsAsync } from '@/lib/productStore';
+import { setProductDisabled, getDisabledProducts } from '@/lib/productStore';
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,12 +31,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const disabledProducts = await getDisabledProductsAsync();
+    const disabledProducts = getDisabledProducts();
     
     return NextResponse.json({
       success: true,
       message: disabled ? '產品已下架' : '產品已上架',
-      disabledProducts
+      disabledProducts,
+      note: '已提交 GitHub，Vercel 部署中...'
     });
   } catch (error) {
     console.error('操作失败:', error);
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const disabledProducts = await getDisabledProductsAsync();
+    const disabledProducts = getDisabledProducts();
     
     return NextResponse.json({
       success: true,

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDisabledProductsAsync, clearDisabledProducts } from '@/lib/productStore';
+import { getDisabledProducts, clearDisabledProducts } from '@/lib/productStore';
 
 // 獲取下架產品列表
 export async function GET() {
-  const disabledProducts = await getDisabledProductsAsync();
+  const disabledProducts = getDisabledProducts();
   
   return NextResponse.json({
     success: true,
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      message: '已清除所有下架產品'
+      message: '已清除所有下架產品，Vercel 部署中...'
     });
   } catch (error) {
     return NextResponse.json(
