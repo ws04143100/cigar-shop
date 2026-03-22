@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import * as path from 'path';
 import { isProductDisabled, getDisabledProducts } from '@/lib/productStore';
+import { EXCEL_FILE_NAME } from '@/lib/excelConfig';
 
 // 产�??�据?�口
 export interface Product {
@@ -34,7 +35,7 @@ function generateProductId(name: string, category: string, rowIndex: number): st
 function readExcelData(): { products: Product[], brandStats: Record<string, number> } {
   try {
     const fs = require('fs');
-    const excelPath = path.join(process.cwd(), 'assets', '20260322批發表.xlsx');
+    const excelPath = path.join(process.cwd(), 'assets', EXCEL_FILE_NAME);
     
     const buffer = fs.readFileSync(excelPath);
     const workbook = XLSX.read(buffer, { type: 'buffer' });
