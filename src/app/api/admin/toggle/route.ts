@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { setProductDisabled, getDisabledProducts } from '@/lib/productStore';
+import { setProductDisabled, getDisabledProductsAsync } from '@/lib/productStore';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,12 +22,21 @@ export async function POST(request: NextRequest) {
     }
     
     // 设置下架状态
-    setProductDisabled(productId, disabled);
+    const success = await setProductDisabled(productId, disabled);
+    
+    if (!success) {
+      return NextResponse.json(
+        { success: false, error: '操作失敗，請稍後重試' },
+        { status: 500 }
+      );
+    }
+    
+    const disabledProducts = await getDisabledProductsAsync();
     
     return NextResponse.json({
       success: true,
       message: disabled ? '產品已下架' : '產品已上架',
-      disabledProducts: getDisabledProducts()
+      disabledProducts
     });
   } catch (error) {
     console.error('操作失败:', error);
@@ -51,9 +60,11 @@ export async function GET(request: NextRequest) {
       );
     }
     
+    const disabledProducts = await getDisabledProductsAsync();
+    
     return NextResponse.json({
       success: true,
-      disabledProducts: getDisabledProducts()
+      disabledProducts
     });
   } catch (error) {
     console.error('获取下架列表失败:', error);

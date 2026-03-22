@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 清空下架列表，刷新后产品将根据库存重新显示
-    clearDisabledProducts();
+    await clearDisabledProducts();
     
     return NextResponse.json({
       success: true,

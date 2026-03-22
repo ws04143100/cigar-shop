@@ -1,0 +1,26 @@
+#!/bin/sh
+# Pre-commit hook for cigar-shop
+# 自動檢查代碼品質
+
+echo "🔍 執行代碼品質檢查..."
+
+# 檢查 TypeScript 語法
+echo "📝 檢查 TypeScript..."
+cd .
+npx tsc --noEmit
+
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript 檢查失敗，請修正後再提交"
+  exit 1
+fi
+
+# 檢查 ESLint
+echo "🧹 執行 ESLint..."
+npm run lint
+
+if [ $? -ne 0 ]; then
+  echo "❌ ESLint 檢查失敗，請修正後再提交"
+  exit 1
+fi
+
+echo "✅ 檢查通過，可以提交！"

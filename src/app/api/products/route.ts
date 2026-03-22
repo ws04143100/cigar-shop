@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import * as path from 'path';
-import { isProductDisabled, getDisabledProducts } from '@/lib/productStore';
+import { isProductDisabledAsync, getDisabledProductsAsync } from '@/lib/productStore';
 import { EXCEL_FILE_NAME } from '@/lib/excelConfig';
 
 // 产�??�据?�口
@@ -114,24 +114,27 @@ export async function GET(request: NextRequest) {
     
     const { products, brandStats } = readExcelData();
     
-    // 筛选产??
+    // 篩選產品
     let filteredProducts = products;
     
     if (brand) {
       filteredProducts = filteredProducts.filter(p => p.category === brand);
     }
     
-    // ?�管?��?模�?下�?过滤?��??��?产�?
+    // 非管理員模式下過濾下架產品
     if (admin !== 'true') {
-      filteredProducts = filteredProducts.filter(p => !isProductDisabled(p.id));
+      const disabledProducts = await getDisabledProductsAsync();
+      filteredProducts = filteredProducts.filter(p => !disabledProducts.includes(p.id));
     }
+    
+    const disabledProducts = await getDisabledProductsAsync();
     
     return NextResponse.json({
       success: true,
       data: filteredProducts,
       total: filteredProducts.length,
       brandStats,
-      disabledProducts: admin === 'true' ? getDisabledProducts() : undefined
+      disabledProducts: admin === 'true' ? disabledProducts : undefined
     });
   } catch (error) {
     console.error('?��?产�??�据失败:', error);

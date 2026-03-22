@@ -1,38 +1,77 @@
-// 產品下架管理 - 使用環境變量
+// 產品下架管理 - 使用 Vercel KV
 
-// 從環境變量讀取下架產品列表
-// 格式：DISABLED_PRODUCTS=product-id-1,product-id-2,product-id-3
-// 在 Vercel Dashboard > Settings > Environment Variables 中設置
+import { kv } from '@vercel/kv';
 
-function getDisabledProductsFromEnv(): Set<string> {
-  const envValue = process.env.DISABLED_PRODUCTS || '';
-  if (!envValue) return new Set();
-  
-  return new Set(
-    envValue.split(',').map(id => id.trim()).filter(id => id.length > 0)
-  );
-}
+const DISABLED_PRODUCTS_KEY = 'disabled_products';
 
 // 檢查產品是否下架
 export function isProductDisabled(productId: string): boolean {
-  return getDisabledProductsFromEnv().has(productId);
+  // 這個需要在異步環境中調用
+  return false; // 會在 API 層處理
 }
 
-// 獲取所有下架產品 ID 列表
+// 異步版本 - 檢查產品是否下架
+export async function isProductDisabledAsync(productId: string): Promise<boolean> {
+  try {
+    const disabledList = await kv.get<string[]>(DISABLED_PRODUCTS_KEY) || [];
+    return disabledList.includes(productId);
+  } catch (error) {
+    console.error('KV 讀取失敗:', error);
+    return false;
+  }
+}
+
+// 異步版本 - 獲取所有下架產品 ID 列表
+export async function getDisabledProductsAsync(): Promise<string[]> {
+  try {
+    return await kv.get<string[]>(DISABLED_PRODUCTS_KEY) || [];
+  } catch (error) {
+    console.error('KV 讀取失敗:', error);
+    return [];
+  }
+}
+
+// 設置產品下架狀態
+export async function setProductDisabled(productId: string, disabled: boolean): Promise<boolean> {
+  try {
+    const disabledList = await kv.get<string[]>(DISABLED_PRODUCTS_KEY) || [];
+    
+    let newList: string[];
+    if (disabled) {
+      // 添加到下架列表（如果不存在）
+      if (!disabledList.includes(productId)) {
+        newList = [...disabledList, productId];
+      } else {
+        newList = disabledList;
+      }
+    } else {
+      // 從下架列表移除
+      newList = disabledList.filter(id => id !== productId);
+    }
+    
+    await kv.set(DISABLED_PRODUCTS_KEY, newList);
+    console.log(`[KV] 產品 ${productId} 下架狀態: ${disabled}, 最新列表:`, newList);
+    return true;
+  } catch (error) {
+    console.error('KV 設置失敗:', error);
+    return false;
+  }
+}
+
+// 清除所有下架產品（用於上傳新 Excel 時）
+export async function clearDisabledProducts(): Promise<boolean> {
+  try {
+    await kv.delete(DISABLED_PRODUCTS_KEY);
+    console.log('[KV] 已清除所有下架產品');
+    return true;
+  } catch (error) {
+    console.error('KV 清除失敗:', error);
+    return false;
+  }
+}
+
+// 導出同步版本（兼容舊代碼）
 export function getDisabledProducts(): string[] {
-  return Array.from(getDisabledProductsFromEnv());
-}
-
-// 這個函數僅用於本地開發時模擬下架狀態
-// 生產環境需要通過 Vercel Dashboard 設置環境變量
-export function setProductDisabled(productId: string, disabled: boolean) {
-  // 注意：運行時無法修改環境變量
-  // 需要在 Vercel Dashboard > Settings > Environment Variables 中手動更新
-  // 格式：DISABLED_PRODUCTS=id1,id2,id3
-  console.log(`[本地開發] 產品 ${productId} 下架狀態: ${disabled}`);
-  console.log('[提示] 請在 Vercel Dashboard 環境變量中更新 DISABLED_PRODUCTS');
-}
-
-export function clearDisabledProducts() {
-  console.log('[提示] 請在 Vercel Dashboard 環境變量中清除 DISABLED_PRODUCTS');
+  // 同步版本返回空數組，實際異步操作在 API 層處理
+  return [];
 }

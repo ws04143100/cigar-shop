@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(process.cwd(), 'assets', '20260318批發表.xlsx');
     await writeFile(filePath, buffer);
     
-    // 清空下架列表
-    clearDisabledProducts();
+    // 清空下架列表（上新表格時自動解除所有下架）
+    await clearDisabledProducts();
     
     return NextResponse.json({
       success: true,
