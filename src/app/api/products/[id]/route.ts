@@ -32,7 +32,7 @@ function generateProductId(name: string, category: string, rowIndex: number): st
 function readExcelData(): Product[] {
   try {
     const fs = require('fs');
-    const excelPath = path.join(process.cwd(), 'assets', '20260318批發表.xlsx');
+    const excelPath = path.join(process.cwd(), 'assets', '20260322批發表.xlsx');
     
     const buffer = fs.readFileSync(excelPath);
     const workbook = XLSX.read(buffer, { type: 'buffer' });
@@ -67,6 +67,10 @@ function readExcelData(): Product[] {
       if (nameStr.includes('散支') || nameStr.includes('PCC')) continue;
       if (tagStr !== '雪茄') continue;
       
+      const stockNum = parseInt(String(stock || '0')) || 0;
+      // 只顯示庫存 > 1 的產品
+      if (stockNum <= 1) continue;
+      
       // 使用稳定的 ID 生成方式
       const productId = generateProductId(nameStr, String(category || ''), i);
       
@@ -79,7 +83,7 @@ function readExcelData(): Product[] {
         salePrice: parseFloat(salePrice) || 0,
         tag: tagStr,
         description: '',
-        stock: parseInt(String(stock || '0')) || 0
+        stock: stockNum
       });
     }
     
