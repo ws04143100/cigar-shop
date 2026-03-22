@@ -1,20 +1,17 @@
 // 產品下架管理 - 使用 JSON 文件
 // 儲存位置：data/disabled-products.json
-// 每次更新會觸發 GitHub commit → Vercel 部署
+// 每次更新會觸發 Vercel Deploy Hook → 部署
 
 import * as fs from 'fs';
 import * as path from 'path';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DISABLED_FILE = path.join(DATA_DIR, 'disabled-products.json');
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const REPO_OWNER = 'ws04143100';
-const REPO_NAME = 'cigar-shop';
-const FILE_PATH = 'data/disabled-products.json';
+const VERCEL_DEPLOY_HOOK = process.env.VERCEL_DEPLOY_HOOK;
 
 // 確保 data 目錄存在
 function ensureDataDir() {
-  if (!fs.existsSync(DISABLED_FILE)) {
+  if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
     // 創建初始文件
     fs.writeFileSync(DISABLED_FILE, JSON.stringify({ products: [], updatedAt: new Date().toISOString() }, null, 2));
@@ -48,59 +45,27 @@ function writeDisabledProducts(products: string[]): void {
   console.log('[JSON] 已更新下架列表:', products);
 }
 
-// 提交到 GitHub
-async function commitToGitHub(products: string[]): Promise<boolean> {
-  if (!GITHUB_TOKEN) {
-    console.log('[JSON] 無 GITHUB_TOKEN，跳過自動提交');
+// 觸發 Vercel 部署
+async function triggerDeployment(): Promise<boolean> {
+  if (!VERCEL_DEPLOY_HOOK) {
+    console.log('[JSON] 無 VERCEL_DEPLOY_HOOK，跳過部署觸發');
     return false;
   }
   
   try {
-    const content = fs.readFileSync(DISABLED_FILE, 'utf-8');
-    const base64Content = Buffer.from(content).toString('base64');
-    
-    // 獲取當前文件的 SHA
-    const getUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-    const getResponse = await fetch(getUrl, {
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json'
-      }
+    const response = await fetch(VERCEL_DEPLOY_HOOK, {
+      method: 'POST'
     });
     
-    let sha = '';
-    if (getResponse.ok) {
-      const getData = await getResponse.json();
-      sha = getData.sha;
-    }
-    
-    // 提交更新
-    const commitMessage = `Update disabled products: ${products.join(', ') || 'none'}`;
-    const putUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-    
-    const putResponse = await fetch(putUrl, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify({
-        message: commitMessage,
-        content: base64Content,
-        sha: sha
-      })
-    });
-    
-    if (putResponse.ok) {
-      console.log('[JSON] 已提交到 GitHub');
+    if (response.ok) {
+      console.log('[JSON] 已觸發 Vercel 部署');
       return true;
     } else {
-      console.error('[JSON] GitHub 提交失敗:', await putResponse.text());
+      console.error('[JSON] Vercel 部署觸發失敗:', response.status);
       return false;
     }
   } catch (error) {
-    console.error('[JSON] GitHub 提交錯誤:', error);
+    console.error('[JSON] Vercel 部署觸發錯誤:', error);
     return false;
   }
 }
@@ -135,10 +100,10 @@ export async function setProductDisabled(productId: string, disabled: boolean): 
     writeDisabledProducts(newList);
     console.log(`[JSON] 產品 ${productId} 下架狀態: ${disabled}`);
     
-    // 提交到 GitHub
-    const committed = await commitToGitHub(newList);
-    if (committed) {
-      console.log('[JSON] Vercel 將自動部署...');
+    // 觸發 Vercel 部署
+    const deployed = await triggerDeployment();
+    if (deployed) {
+      console.log('[JSON] Vercel 部署中，請稍候...');
     }
     
     return true;
@@ -154,7 +119,7 @@ export async function clearDisabledProducts(): Promise<boolean> {
     writeDisabledProducts([]);
     console.log('[JSON] 已清除所有下架產品');
     
-    await commitToGitHub([]);
+    await triggerDeployment();
     
     return true;
   } catch (error) {
