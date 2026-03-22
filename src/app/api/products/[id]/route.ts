@@ -115,7 +115,7 @@ export async function GET(
     }
     
     // 检查是否下架
-    const disabled = isProductDisabled(id);
+    const disabled = await isProductDisabled(id);
     
     return NextResponse.json({
       success: true,

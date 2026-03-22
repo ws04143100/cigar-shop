@@ -3,7 +3,7 @@ import { getDisabledProducts, clearDisabledProducts } from '@/lib/productStore';
 
 // 獲取下架產品列表
 export async function GET() {
-  const disabledProducts = getDisabledProducts();
+  const disabledProducts = await getDisabledProducts();
   
   return NextResponse.json({
     success: true,

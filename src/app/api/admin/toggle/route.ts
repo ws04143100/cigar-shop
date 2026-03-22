@@ -31,13 +31,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const disabledProducts = getDisabledProducts();
+    const disabledProducts = await getDisabledProducts();
     
     return NextResponse.json({
       success: true,
       message: disabled ? '產品已下架' : '產品已上架',
       disabledProducts,
-      note: '已提交 GitHub，Vercel 部署中...'
+      note: '已更新'
     });
   } catch (error) {
     console.error('操作失败:', error);
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const disabledProducts = getDisabledProducts();
+    const disabledProducts = await getDisabledProducts();
     
     return NextResponse.json({
       success: true,

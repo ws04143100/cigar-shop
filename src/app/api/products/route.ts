@@ -123,11 +123,11 @@ export async function GET(request: NextRequest) {
     
     // 非管理員模式下過濾下架產品
     if (admin !== 'true') {
-      const disabledProducts = getDisabledProducts();
+      const disabledProducts = await getDisabledProducts();
       filteredProducts = filteredProducts.filter(p => !disabledProducts.includes(p.id));
     }
     
-    const disabledProducts = getDisabledProducts();
+    const disabledProducts = await getDisabledProducts();
     
     return NextResponse.json({
       success: true,
