@@ -275,7 +275,7 @@ export default function AdminPage() {
                   
                   <button
                     onClick={() => toggleProduct(product.id, isDisabled)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`relative z-10 px-4 py-2 rounded-lg text-sm font-medium transition-colors min-w-[60px] ${
                       isDisabled
                         ? 'bg-green-600 hover:bg-green-700 text-white'
                         : 'bg-red-600 hover:bg-red-700 text-white'
