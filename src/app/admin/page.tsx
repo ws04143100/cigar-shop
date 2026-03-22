@@ -81,10 +81,14 @@ export default function AdminPage() {
       
       const data = await response.json();
       if (data.success) {
-        setDisabledProducts(data.disabledProducts);
+        setDisabledProducts(data.disabledProducts || []);
+        alert(data.message || (currentlyDisabled ? '產品已上架' : '產品已下架'));
+      } else {
+        alert('操作失敗: ' + (data.error || '未知錯誤'));
       }
     } catch (error) {
       console.error('操作失败:', error);
+      alert('操作失敗，請稍後重試');
     }
   };
 
