@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, Sparkles, Ban, X, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Package, Sparkles, Ban, X, Eye, EyeOff, Trash2, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -38,6 +39,12 @@ export default function ProductDetailPage() {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [newCommentName, setNewCommentName] = useState('');
   const [newCommentContent, setNewCommentContent] = useState('');
+
+  // 產品圖片狀態
+  const [productImages, setProductImages] = useState<string[]>([]);
+  const [imagesLoading, setImagesLoading] = useState(true);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showLightbox, setShowLightbox] = useState(false);
   const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
@@ -50,8 +57,46 @@ export default function ProductDetailPage() {
   useEffect(() => {
     if (product && product.id) {
       fetchComments();
+      fetchProductImages(product.id);
     }
   }, [product]);
+
+  // 獲取產品圖片
+  const fetchProductImages = async (productId: string) => {
+    setImagesLoading(true);
+    try {
+      // 從靜態資料夾讀取圖片
+      // 假設圖片放在 /images/products/{id}/ 目錄
+      const response = await fetch(`/images/products/${productId}/`);
+      const html = await response.text();
+      
+      // 解析 HTML 找到所有圖片檔案
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+      const imagePaths: string[] = [];
+      
+      // 用正則表達式從 HTML 中提取圖片路徑
+      const imgMatches = html.match(/["']([^"']*\.(jpg|jpeg|png|webp|gif)["']/gi) || [];
+      for (const match of imgMatches) {
+        const path = match.replace(/["']/g, '');
+        if (path.includes(`/products/${productId}/`)) {
+          imagePaths.push(path);
+        }
+      }
+      
+      // 清理路徑並去除重複
+      const cleanPaths = [...new Set(imagePaths)].filter(Boolean);
+      setProductImages(cleanPaths);
+    } catch (error) {
+      console.error('獲取產品圖片失敗:', error);
+      setProductImages([]);
+    } finally {
+      setImagesLoading(false);
+    }
+  };
+
+  // 上一張/下一張圖片
+  const prevImage = () => setSelectedImageIndex(prev => (prev - 1 + productImages.length) % productImages.length);
+  const nextImage = () => setSelectedImageIndex(prev => (prev + 1) % productImages.length);
 
   const fetchProduct = async (id: string) => {
     try {
@@ -314,6 +359,65 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
+            {/* 產品圖片展示 */}
+            {productImages.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-amber-200 dark:border-gray-700 overflow-hidden">
+                {/* 圖片畫廊 */}
+                <div className="relative">
+                  {/* 主圖 */}
+                  <div 
+                    className="relative aspect-square bg-gray-100 dark:bg-gray-700 cursor-pointer"
+                    onClick={() => setShowLightbox(true)}
+                  >
+                    <img
+                      src={productImages[selectedImageIndex]}
+                      alt={`${product.name} - 圖片 ${selectedImageIndex + 1}`}
+                      className="w-full h-full object-contain"
+                    />
+                    {productImages.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                        >
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
+                        >
+                          <ChevronRight className="w-6 h-6" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* 縮略圖列表 */}
+                  {productImages.length > 1 && (
+                    <div className="flex gap-2 p-4 overflow-x-auto">
+                      {productImages.map((img, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedImageIndex(index)}
+                          className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                            index === selectedImageIndex 
+                              ? 'border-amber-500 ring-2 ring-amber-200' 
+                              : 'border-transparent opacity-60 hover:opacity-100'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`縮略圖 ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Description */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-amber-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-3">
@@ -486,6 +590,55 @@ export default function ProductDetailPage() {
             >
               {disableLoading ? '處理中...' : '確認下架'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* 圖片 Lightbox（全屏查看） */}
+      {showLightbox && productImages.length > 0 && (
+        <div 
+          className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          onClick={() => setShowLightbox(false)}
+        >
+          {/* 關閉按鈕 */}
+          <button
+            onClick={() => setShowLightbox(false)}
+            className="absolute top-4 right-4 p-2 text-white hover:text-gray-300 z-10"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          
+          {/* 上一張 */}
+          {productImages.length > 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors z-10"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+          )}
+          
+          {/* 主圖 */}
+          <img
+            src={productImages[selectedImageIndex]}
+            alt={`${product.name} - 圖片 ${selectedImageIndex + 1}`}
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          
+          {/* 下一張 */}
+          {productImages.length > 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors z-10"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          )}
+          
+          {/* 計數器 */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm">
+            {selectedImageIndex + 1} / {productImages.length}
           </div>
         </div>
       )}
