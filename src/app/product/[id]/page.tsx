@@ -75,7 +75,7 @@ export default function ProductDetailPage() {
       const imagePaths: string[] = [];
       
       // 用正則表達式從 HTML 中提取圖片路徑
-      const imgMatches = html.match(/["']([^"']*\.(jpg|jpeg|png|webp|gif)["']/gi) || [];
+      const imgMatches = html.match(/["']([^"']*\.(jpg|jpeg|png|webp|gif))["']/gi) || [];
       for (const match of imgMatches) {
         const path = match.replace(/["']/g, '');
         if (path.includes(`/products/${productId}/`)) {
