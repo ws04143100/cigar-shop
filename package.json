@@ -71,10 +71,10 @@
     "vaul": "^1.1.2",
     "xlsx": "^0.18.5",
     "zod": "^4.3.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@tailwindcss/postcss": "^4"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
