@@ -58,17 +58,38 @@ function readExcelData(): { products: Product[], brandStats: Record<string, numb
       const row = data[i];
       if (!row || row.length < 14) continue;
       
-      const [
-        name,
-        category,  // ?��?
-        ,  // ?��? - 已移??
-        wholesalePrice,
-        , , , , , ,  // S, D, C, B, H, ??
-        salePrice,   // K??- ?�?�价
-        ,  // L??
-        stock,  // M??- 库�?
-        tag
-      ] = row;
+      // Detect file format: new files have 15 columns (with 进货价 at index 10)
+      const has进货价 = row.length >= 15;
+      
+      let name: any, category: any, wholesalePrice: any, salePrice: any, stock: any, tag: any;
+      if (has进货价) {
+        // New format: 15 cols - 进货价 at index 10 shifts everything after it by +1
+        [
+          name,
+          category,
+          ,  // 条码
+          wholesalePrice,  // index 3 - 批发价
+          , , , , , ,  // S, D, C, B, H, 倉 (indices 4-9)
+          ,  // 进货价 (index 10) - skip
+          salePrice,  // index 11 - 销售价
+          ,  // 零下 (index 12)
+          stock,  // index 13 - 库存总和
+          tag      // index 14 - 标签
+        ] = row;
+      } else {
+        // Old format: 14 cols - no 进货价 column
+        [
+          name,
+          category,
+          ,  // 条码
+          wholesalePrice,  // index 3 - 批发价
+          , , , , , ,  // S, D, C, B, H, 倉 (indices 4-9)
+          salePrice,  // index 10 - 销售价
+          ,  // 零下 (index 11)
+          stock,  // index 12 - 库存总和
+          tag      // index 13 - 标签
+        ] = row;
+      }
       
       if (!name || name === '---' || !tag || tag === '---') continue;
       
