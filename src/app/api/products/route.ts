@@ -45,6 +45,11 @@ function readExcelData(): { products: Product[], brandStats: Record<string, numb
     
     const data = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[][];
     
+    console.log('[Excel] Total rows:', data.length);
+    if (data.length > 0) console.log('[Excel] Header row:', JSON.stringify(data[0]));
+    if (data.length > 1) console.log('[Excel] Row 1:', JSON.stringify(data[1]));
+    if (data.length > 2) console.log('[Excel] Row 2:', JSON.stringify(data[2]));
+    
     const products: Product[] = [];
     const brandStats: Record<string, number> = {};
     
