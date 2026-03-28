@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     
-    // 保存到 assets 目录
-    const filePath = path.join(process.cwd(), 'assets', '20260318批發表.xlsx');
+    // 保存到 assets 目录，保留原始檔名
+    const filePath = path.join(process.cwd(), 'assets', file.name);
     await writeFile(filePath, buffer);
     
     // 清空下架列表（上新表格時自動解除所有下架）
